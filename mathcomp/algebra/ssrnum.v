@@ -2354,8 +2354,7 @@ Qed.
 
 Lemma ltr_pmuln2l x :
   0 < x -> {mono (@GRing.natmul R x) : m n / (m < n)%N >-> m < n}.
-Proof. Admitted.
-(* Proof. by move=> x_gt0; apply: rleW_mono (ler_pmuln2l _). Qed. *)
+Proof. by move=> x_gt0; apply:(@rleW_mono _ _ [porderType of nat] R) (ler_pmuln2l _). Qed.
 
 Lemma ler_nmuln2l x :
   x < 0 -> {mono (@GRing.natmul R x) : m n / (n <= m)%N >-> m <= n}.
@@ -2365,8 +2364,7 @@ Qed.
 
 Lemma ltr_nmuln2l x :
   x < 0 -> {mono (@GRing.natmul R x) : m n / (n < m)%N >-> m < n}.
-Proof. Admitted.
-(* Proof. by move=> x_lt0; apply: rleW_nmono (ler_nmuln2l _). Qed. *)
+Proof. by move=> x_lt0; apply: (@rleW_nmono _ _ [porderType of nat] R) (ler_nmuln2l _). Qed.
 
 Lemma ler_nat m n : (m%:R <= n%:R :> R) = (m <= n)%N.
 Proof. by rewrite ler_pmuln2l. Qed.
@@ -2782,8 +2780,9 @@ Lemma ler_iexpn2l x :
   0 < x -> x < 1 -> {mono (GRing.exp x) : m n / (n <= m)%N >-> m <= n}.
 Proof. Admitted.
 (* Proof.
-move=> xgt0 xlt1; apply: (rle_nmono (rinj_nhomo_lt _ _)); last first.
-  by apply: ler_wiexpn2l; rewrite ltW.
+move=> xgt0 xlt1; apply: ((@rle_nmono _ _ [orderType of nat] R)).
+apply (@rinj_homo_lt nat_eqType).
+by apply: ler_wiexpn2l; rewrite rltW.
 by apply: ieexprIn; rewrite ?lt_eqF ?ltr_cpable.
 Qed. *)
 
