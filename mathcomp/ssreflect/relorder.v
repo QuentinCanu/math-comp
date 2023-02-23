@@ -5291,25 +5291,40 @@ Proof. by case: ltngtP. Qed.
 
 Definition nat_pOrderMixin := LePOrderMixin ltn_def leqnn anti_leq leq_trans.
 
-Local Canonical nat_pOrder := POrder leq ltn nat_pOrderMixin.
+Canonical nat_pOrder := POrder leq ltn nat_pOrderMixin.
 (* BUG, TODO: the packager [BPOrder] can infer the [pOrder] instance only     *)
 (* from the symbol [leq]. If [leq] is replaced with [unkeyed leq] above, the  *)
 (* following declaration fails.                                               *)
-Local Canonical nat_bPOrder := BPOrder leq ltn 0 leq0n.
+Canonical nat_bPOrder := BPOrder leq ltn 0 leq0n.
 
 Definition nat_totalMixin : totalPOrderRelMixin nat_pOrder := leq_total.
 
-Local Canonical nat_meetOrder := MeetOrder leq ltn minn nat_totalMixin.
-Local Canonical nat_bMeetOrder := [bMeetOrder of leq].
-Local Canonical nat_joinOrder := JoinOrder leq ltn maxn nat_totalMixin.
-Local Canonical nat_bJoinOrder := [bJoinOrder of leq].
-Local Canonical nat_lattice := [lattice of leq].
-Local Canonical nat_bLattice := [bLattice of leq].
-Local Canonical nat_distrLattice :=
+Canonical nat_meetOrder := MeetOrder leq ltn minn nat_totalMixin.
+Canonical nat_bMeetOrder := [bMeetOrder of leq].
+Canonical nat_joinOrder := JoinOrder leq ltn maxn nat_totalMixin.
+Canonical nat_bJoinOrder := [bJoinOrder of leq].
+Canonical nat_lattice := [lattice of leq].
+Canonical nat_bLattice := [bLattice of leq].
+Canonical nat_distrLattice :=
   DistrLattice leq ltn minn maxn nat_totalMixin.
-Local Canonical nat_bDistrLattice := [bDistrLattice of leq].
-Local Canonical nat_totalOrder := TotalOrder leq ltn minn maxn nat_totalMixin.
-Local Canonical nat_bTotalOrder := [bTotalOrder of leq].
+Canonical nat_bDistrLattice := [bDistrLattice of leq].
+Canonical nat_totalOrder := TotalOrder leq ltn minn maxn nat_totalMixin.
+Canonical nat_bTotalOrder := [bTotalOrder of leq].
+
+Module Exports.
+Canonical nat_pOrder.
+Canonical nat_bPOrder.
+Canonical nat_meetOrder.
+Canonical nat_bMeetOrder.
+Canonical nat_joinOrder.
+Canonical nat_bJoinOrder.
+Canonical nat_lattice.
+Canonical nat_bLattice.
+Canonical nat_distrLattice.
+Canonical nat_bDistrLattice.
+Canonical nat_totalOrder.
+Canonical nat_bTotalOrder.
+End Exports.
 
 End NatOrder.
 
@@ -5368,3 +5383,4 @@ Export RelOrder.MeetJoinMixin.Exports.
 Export RelOrder.DistrMeetJoinMixin.Exports.
 Export RelOrder.LeOrderMixin.Exports.
 Export RelOrder.LtOrderMixin.Exports.
+Export RelOrder.NatOrder.Exports.

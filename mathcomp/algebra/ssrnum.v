@@ -2354,7 +2354,7 @@ Qed.
 
 Lemma ltr_pmuln2l x :
   0 < x -> {mono (@GRing.natmul R x) : m n / (m < n)%N >-> m < n}.
-Proof. by move=> x_gt0; apply:(@rleW_mono _ _ [porderType of nat] R) (ler_pmuln2l _). Qed.
+Proof. by move=> x_gt0; apply:rleW_mono (ler_pmuln2l _). Qed.
 
 Lemma ler_nmuln2l x :
   x < 0 -> {mono (@GRing.natmul R x) : m n / (n <= m)%N >-> m <= n}.
@@ -2364,7 +2364,7 @@ Qed.
 
 Lemma ltr_nmuln2l x :
   x < 0 -> {mono (@GRing.natmul R x) : m n / (n < m)%N >-> m < n}.
-Proof. by move=> x_lt0; apply: (@rleW_nmono _ _ [porderType of nat] R) (ler_nmuln2l _). Qed.
+Proof. by move=> x_lt0; apply: rleW_nmono (ler_nmuln2l _). Qed.
 
 Lemma ler_nat m n : (m%:R <= n%:R :> R) = (m <= n)%N.
 Proof. by rewrite ler_pmuln2l. Qed.
@@ -2778,34 +2778,29 @@ Qed.
 
 Lemma ler_iexpn2l x :
   0 < x -> x < 1 -> {mono (GRing.exp x) : m n / (n <= m)%N >-> m <= n}.
-Proof. Admitted.
-(* Proof.
-move=> xgt0 xlt1; apply: ((@rle_nmono _ _ [orderType of nat] R)).
-apply (@rinj_homo_lt nat_eqType).
+Proof.
+move=> xgt0 xlt1; apply/rle_nmono/rinj_nhomo_lt.
+by apply: ieexprIn; rewrite ?(@rlt_eqF _ R) ?ltr_cpable.
 by apply: ler_wiexpn2l; rewrite rltW.
-by apply: ieexprIn; rewrite ?lt_eqF ?ltr_cpable.
-Qed. *)
+Qed.
 
 Lemma ltr_iexpn2l x :
   0 < x -> x < 1 -> {mono (GRing.exp x) : m n / (n < m)%N >-> m < n}.
-Proof. Admitted.
-(* Proof. by move=> xgt0 xlt1; apply: (rleW_nmono (ler_iexpn2l _ _)). Qed. *)
+Proof. by move=> xgt0 xlt1; apply: rleW_nmono (ler_iexpn2l _ _). Qed.
 
 Definition lter_iexpn2l := (ler_iexpn2l, ltr_iexpn2l).
 
 Lemma ler_eexpn2l x :
   1 < x -> {mono (GRing.exp x) : m n / (m <= n)%N >-> m <= n}.
-Proof. Admitted.
-(* Proof.
+Proof.
 move=> xgt1; apply: (rle_mono (rinj_homo_lt _ _)); last first.
-  by apply: ler_weexpn2l; rewrite ltW.
-by apply: ieexprIn; rewrite ?gt_eqF ?gtr_cpable //; apply: lt_trans xgt1.
-Qed. *)
+  by apply: ler_weexpn2l; rewrite rltW.
+by apply: ieexprIn; rewrite ?(@rgt_eqF _ R) ?gtr_cpable //; apply: rlt_trans xgt1; rosimpl.
+Qed.
 
 Lemma ltr_eexpn2l x :
   1 < x -> {mono (GRing.exp x) : m n / (m < n)%N >-> m < n}.
-Proof. Admitted.
-(* Proof. by move=> xgt1; apply: (leW_mono (ler_eexpn2l _)). Qed. *)
+Proof. by move=> xgt1; apply: (rleW_mono (ler_eexpn2l _)). Qed.
 
 Definition lter_eexpn2l := (ler_eexpn2l, ltr_eexpn2l).
 
@@ -3665,13 +3660,12 @@ Qed.
 Implicit Type p : {poly R}.
 
 Lemma poly_disk_bound p b : {ub | forall x, `|x| <= b -> `|p.[x]| <= ub}.
-Proof. Admitted.
-(* Proof.
+Proof.
 exists (\sum_(j < size p) `|p`_j| * b ^+ j) => x le_x_b.
-rewrite horner_coef (rle_trans (ler_norm_sum _ _ _)) ?ler_sum // => j _.
+rewrite horner_coef (rle_trans (ler_norm_sum _ _ _)) //; rosimpl; rewrite ler_sum //  => j _.
 rewrite normrM normrX ler_wpmul2l ?ler_expn2r ?unfold_in //.
-exact: le_trans (normr_ge0 x) le_x_b.
-Qed. *)
+exact: rle_trans (normr_ge0 x) le_x_b.
+Qed.
 
 End NumDomainOperationTheory.
 
@@ -3724,39 +3718,35 @@ Qed.
 
 Lemma realn_mono : {homo f' : x y / x < y >-> (x < y)} ->
   {in real &, {mono f' : x y / x <= y >-> (x <= y)}}.
-Proof. Admitted.
-(* Proof.
+Proof.
 move=> mf x y xR yR /=; have [lt_xy | le_yx] := real_leP xR yR.
   by rewrite (@rltW_homo _ _ R).
-rewrite rlt_geF; rosimpl; rewrite /= ?mf.
-Qed. *)
+by rewrite rlt_geF //; exact: mf. (* QC : rewrite mf doesn't work*)
+Qed.
 
 Lemma realn_nmono : {homo f' : x y / y < x >-> (x < y)} ->
   {in real &, {mono f' : x y / y <= x >-> (x <= y)}}.
-Proof. Admitted.
-(* Proof.
+Proof.
 move=> mf x y xR yR /=; have [lt_xy|le_yx] := real_ltP xR yR.
-  by rewrite rlt_geF; rosimpl; rewrite ?mf.
-by rewrite ltW_nhomo.
-Qed. *)
+  rewrite rlt_geF //; exact: mf. (* QC : same here*)
+by rewrite (@rltW_nhomo _ _ R).
+Qed.
 
 Lemma realn_mono_in : {in D &, {homo f' : x y / x < y >-> (x < y)}} ->
   {in [pred x in D | x \is real] &, {mono f' : x y / x <= y >-> (x <= y)}}.
-Proof. Admitted.
-(* Proof.
+Proof.
 move=> Dmf x y /andP[hx xR] /andP[hy yR] /=.
 have [lt_xy|le_yx] := real_leP xR yR; first by rewrite (rltW_homo_in Dmf).
-by rewrite rlt_geF; rosimpl; rewrite ?Dmf. 
-Qed. *)
+rewrite rlt_geF //; exact: Dmf. 
+Qed.
 
 Lemma realn_nmono_in : {in D &, {homo f' : x y / y < x >-> (x < y)}} ->
   {in [pred x in D | x \is real] &, {mono f' : x y / y <= x >-> (x <= y)}}.
-Proof. Admitted.
-(* Proof.
+Proof.
 move=> Dmf x y /andP[hx xR] /andP[hy yR] /=.
 have [lt_xy|le_yx] := real_ltP xR yR; last by rewrite (rltW_nhomo_in Dmf).
-by rewrite rlt_geF; rosimpl; rewrite ?Dmf.
-Qed. *)
+rewrite rlt_geF //; exact: Dmf.
+Qed.
 
 End NumDomainMonotonyTheoryForReals.
 
