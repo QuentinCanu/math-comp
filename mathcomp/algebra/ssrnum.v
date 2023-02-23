@@ -5125,10 +5125,10 @@ apply: eqC_semipolar; last 1 first; try apply/eqP.
 - by rewrite -(eqr_expn2 n_gt0) // -!normrX exprMn !rootCK.
 rewrite (@req_le _ C); apply/andP; split; last first.
   rosimpl; rewrite rootC_Re_max ?exprMn ?rootCK ?ImMl //.
-  by rewrite mulr_ge0 ?Im_rootC_ge0 ?rltW.
+  by rewrite mulr_ge0 ?Im_rootC_ge0 // rltW.
 rewrite -[n.-root _](mulVKf (negbT (rgt_eqF nx_gt0))) !(ReMl Rnx) //.
 rosimpl; rewrite ler_pmul2l // rootC_Re_max ?exprMn ?exprVn ?rootCK ?mulKf ?(@rgt_eqF _ C) //.
-by rosimpl; rewrite ImMl ?rpredV // mulr_ge0 ?invr_ge0 ?Im_rootC_ge0 ?rltW.
+by rewrite ImMl ?rpredV // mulr_ge0 ?invr_ge0 ?Im_rootC_ge0 // rltW.
 Qed.
 
 Lemma rootCMr n x z : 0 <= x -> n.-root (z * x) = n.-root z * n.-root x.
